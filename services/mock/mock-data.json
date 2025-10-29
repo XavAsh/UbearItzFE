@@ -4,7 +4,7 @@
       "id": "r-1",
       "name": "Le Bearitz",
       "description": "Cozy bistro with seasonal plates and local wines.",
-      "image": "https://placehold.co/600x400/EEE/31343C",
+      "image": "/images/restaurants/le-bearitz.webp",
       "dishes": [
         {
           "id": "d-1",
@@ -28,17 +28,17 @@
       "id": "r-2",
       "name": "Sushi Annecy",
       "description": "Modern sushi bar, omakase available.",
-      "image": "https://placehold.co/600x400/EEE/31343C",
+      "image": "/images/restaurants/sushi-annecy.webp",
       "dishes": [
         {
           "id": "d-3",
           "name": "Salmon Nigiri (6)",
           "price": 12.0,
-          "image": "https://placehold.co/600x400/EEE/31343C",
+          "image": "/images/dishes/salmon-nigiri.webp",
           "description": "Premium salmon over shari rice.",
           "restaurantId": "r-2"
         },
-        { "id": "d-4", "name": "Spicy Tuna Roll", "price": 10.0, "image": "https://placehold.co/600x400/EEE/31343C", "description": "Tuna with chili mayo.", "restaurantId": "r-2" }
+        { "id": "d-4", "name": "Spicy Tuna Roll", "price": 10.0, "image": "/images/dishes/spicy-tuna-roll.webp", "description": "Tuna with chili mayo.", "restaurantId": "r-2" }
       ]
     }
   ],

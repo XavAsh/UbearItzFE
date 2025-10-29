@@ -4,4 +4,9 @@ export interface Restaurant {
   description: string;
   image: string;
   dishes: Dish[];
+  // Optional business fields for admin-created restaurants
+  address?: string;
+  postalCode?: string;
+  city?: string;
+  contactEmail?: string;
 }

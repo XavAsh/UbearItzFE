@@ -1,5 +1,5 @@
 import { getRestaurantById } from "@/services/api/restaurants";
-import Link from "next/link";
+import BackToRestaurants from "@/components/common/BackToRestaurants";
 import DishCard from "@/components/restaurant/DIshCard";
 
 export default async function RestaurantPage({ params }: { params: Promise<{ id: string }> }) {
@@ -8,9 +8,7 @@ export default async function RestaurantPage({ params }: { params: Promise<{ id:
   return (
     <main>
       <div className="mb-6">
-        <Link href="/" className="text-sm text-gray-600 hover:underline mb-4 inline-block">
-          ← Back to Restaurants
-        </Link>
+        <BackToRestaurants className="text-sm text-gray-600 hover:underline mb-4 inline-block" />
         <h1 className="text-3xl font-bold mb-2">{restaurant.name}</h1>
         <p className="text-gray-700">{restaurant.description}</p>
       </div>

@@ -1,7 +1,7 @@
 {
   "nav.login": "Connexion",
   "nav.register": "Créer un compte",
-  "nav.orders": "Commandes",
+  "nav.history": "Historique",
   "nav.cart": "Panier",
   "nav.account": "Compte",
   "home.title": "Bienvenue sur UbearItz",
@@ -23,5 +23,8 @@
   "home.how.step2": "Ajoutez des articles à votre panier et personnalisez votre commande.",
   "home.how.step3": "Passez à la caisse rapidement et suivez votre livraison en temps réel.",
   "home.how.step4": "Profitez de votre plat délicieux!",
-  "home.restaurants.title": "Restaurants près de chez vous"
+  "home.restaurants.title": "Restaurants près de chez vous",
+
+  "restaurant.menu": "Menu",
+  "restaurant.back": "← Retour aux restaurants"
 }
