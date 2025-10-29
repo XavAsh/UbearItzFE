@@ -1,0 +1,51 @@
+{
+  "restaurants": [
+    {
+      "id": "r-1",
+      "name": "Le Bearitz",
+      "description": "Cozy bistro with seasonal plates and local wines.",
+      "image": "https://placehold.co/600x400/EEE/31343C",
+      "dishes": [
+        {
+          "id": "d-1",
+          "name": "Truffle Pasta",
+          "price": 18.5,
+          "image": "/images/dishes/truffle-pasta.avif",
+          "description": "Fresh tagliatelle with black truffle.",
+          "restaurantId": "r-1"
+        },
+        {
+          "id": "d-2",
+          "name": "Herb Chicken",
+          "price": 16.0,
+          "image": "/images/dishes/herb-chicken.webp",
+          "description": "Roast chicken with thyme jus.",
+          "restaurantId": "r-1"
+        }
+      ]
+    },
+    {
+      "id": "r-2",
+      "name": "Sushi Annecy",
+      "description": "Modern sushi bar, omakase available.",
+      "image": "https://placehold.co/600x400/EEE/31343C",
+      "dishes": [
+        {
+          "id": "d-3",
+          "name": "Salmon Nigiri (6)",
+          "price": 12.0,
+          "image": "https://placehold.co/600x400/EEE/31343C",
+          "description": "Premium salmon over shari rice.",
+          "restaurantId": "r-2"
+        },
+        { "id": "d-4", "name": "Spicy Tuna Roll", "price": 10.0, "image": "https://placehold.co/600x400/EEE/31343C", "description": "Tuna with chili mayo.", "restaurantId": "r-2" }
+      ]
+    }
+  ],
+  "users": [
+    { "id": "u-1", "email": "alice@example.com", "password": "password123", "role": "customer", "image": "https://placehold.co/600x400/EEE/31343C" },
+    { "id": "u-2", "email": "chef@bearitz.com", "password": "secretchef", "role": "restaurant", "image": "https://placehold.co/600x400/EEE/31343C" },
+    { "id": "u-3", "email": "admin@example.com", "password": "admin123", "role": "admin" }
+  ],
+  "orders": []
+}

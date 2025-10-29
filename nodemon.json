@@ -1,0 +1,6 @@
+{
+  "exec": "next dev",
+  "watch": ["app", "pages", "components", "public", "styles"],
+  "ext": "ts,tsx,js,jsx,css,scss,md,mdx,json",
+  "ignore": [".next", "node_modules"]
+}

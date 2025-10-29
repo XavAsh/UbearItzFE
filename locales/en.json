@@ -1,0 +1,27 @@
+{
+  "nav.login": "Login",
+  "nav.register": "Create account",
+  "nav.orders": "Orders",
+  "nav.cart": "Cart",
+  "nav.account": "Account",
+  "home.title": "Welcome to UbearItz",
+  "home.how": "How it works",
+  "home.restaurants": "Restaurants near you",
+  "account.title": "My Account",
+  "account.loggedInAs": "Logged in as",
+  "account.role": "Role",
+  "account.name": "Name",
+  "account.email": "Email",
+  "actions.save": "Save",
+  "actions.logout": "Logout",
+  "lang.english": "English",
+  "lang.french": "Français",
+
+  "home.description": "Discover, order, and enjoy delicious food from local restaurants near you. Whether you're craving pizza, sushi, burgers, or something sweet, we've got you covered!",
+  "home.how.title": "How it works",
+  "home.how.step1": "Browse your favorite local restaurants below.",
+  "home.how.step2": "Add items to your cart and customize your order.",
+  "home.how.step3": "Checkout quickly and track your delivery in real time.",
+  "home.how.step4": "Enjoy your delicious food!",
+  "home.restaurants.title": "Restaurants near you"
+}
