@@ -6,9 +6,14 @@
   "nav.account": "Account",
   "nav.admin": "Admin",
   "nav.logout": "Logout",
+  "nav.restaurant": "Restaurant",
+  "nav.dishes": "Dishes",
+  "nav.orders": "Orders",
+
   "home.title": "Welcome to UbearItz",
   "home.how": "How it works",
   "home.restaurants": "Restaurants near you",
+
   "account.title": "My Account",
   "account.loggedInAs": "Logged in as",
   "account.role": "Role",

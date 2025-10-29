@@ -4,16 +4,24 @@
   "nav.history": "Historique",
   "nav.cart": "Panier",
   "nav.account": "Compte",
+  "nav.restaurant": "Restaurant",
+  "nav.dishes": "Plats",
+  "nav.orders": "Commandes",
+  "nav.logout": "Se déconnecter",
+
   "home.title": "Bienvenue sur UbearItz",
   "home.how": "Comment ça marche",
   "home.restaurants": "Restaurants près de chez vous",
+
   "account.title": "Mon compte",
   "account.loggedInAs": "Connecté en tant que",
   "account.role": "Rôle",
   "account.name": "Nom",
   "account.email": "Email",
+
   "actions.save": "Enregistrer",
   "actions.logout": "Se déconnecter",
+
   "lang.english": "English",
   "lang.french": "Français",
 
