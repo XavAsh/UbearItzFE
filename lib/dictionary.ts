@@ -8,3 +8,4 @@ export function getDictionary(locale: Locale) {
   return dictionaries[locale] ?? dictionaries.en;
 }
 
+

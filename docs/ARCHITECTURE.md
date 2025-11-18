@@ -29,3 +29,4 @@
 
 This document should evolve alongside those upgrades so new contributors immediately grasp how routes, services, and stores interact.
 
+
