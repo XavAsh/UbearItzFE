@@ -4,7 +4,7 @@
       "id": "r-1",
       "name": "Le Bearitz",
       "description": "Cozy bistro with seasonal plates and local wines.",
-      "image": "/images/restaurants/le-bearitz.webp",
+      "image": "/images/restaurants/Le-Bearitz.webp",
       "address": "15 Rue de la Paix",
       "postalCode": "74000",
       "city": "Annecy",
@@ -14,7 +14,7 @@
           "id": "d-1",
           "name": "Truffle Pasta",
           "price": 18.5,
-          "image": "/images/dishes/truffle-pasta.avif",
+          "image": "/images/dishes/Truffle-Pasta.avif",
           "description": "Fresh tagliatelle with black truffle.",
           "restaurantId": "r-1"
         },
@@ -22,7 +22,7 @@
           "id": "d-2",
           "name": "Herb Chicken",
           "price": 16.0,
-          "image": "/images/dishes/herb-chicken.webp",
+          "image": "/images/dishes/Herb-Chicken.webp",
           "description": "Roast chicken with thyme jus.",
           "restaurantId": "r-1"
         }
@@ -32,17 +32,17 @@
       "id": "r-2",
       "name": "Sushi Annecy",
       "description": "Modern sushi bar, omakase available.",
-      "image": "/images/restaurants/sushi-annecy.webp",
+      "image": "/images/restaurants/Sushi-Annecy.webp",
       "dishes": [
         {
           "id": "d-3",
           "name": "Salmon Nigiri (6)",
           "price": 12.0,
-          "image": "/images/dishes/salmon-nigiri.webp",
+          "image": "/images/dishes/Salmon-Nigiri.webp",
           "description": "Premium salmon over shari rice.",
           "restaurantId": "r-2"
         },
-        { "id": "d-4", "name": "Spicy Tuna Roll", "price": 10.0, "image": "/images/dishes/spicy-tuna-roll.webp", "description": "Tuna with chili mayo.", "restaurantId": "r-2" }
+        { "id": "d-4", "name": "Spicy Tuna Roll", "price": 10.0, "image": "/images/dishes/Spicy-Tuna-Roll.webp", "description": "Tuna with chili mayo.", "restaurantId": "r-2" }
       ]
     }
   ],
