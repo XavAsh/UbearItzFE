@@ -1,24 +1,23 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import BackToRestaurants from "@/components/common/BackToRestaurants";
-import DishCard from "@/components/restaurant/DIshCard";
+import DishCard from "@/components/restaurant/DishCard";
 import { fetchRestaurantById, fetchRestaurants } from "@/lib/data/restaurants";
 import { buildMetadata, buildRestaurantSchema } from "@/lib/seo";
 
 export const revalidate = 60;
 
-type RestaurantPageProps = {
-  params: { id: string };
-};
+type RestaurantPageParams = { id: string };
 
-export async function generateStaticParams() {
+export async function generateStaticParams(): Promise<RestaurantPageParams[]> {
   const restaurants = await fetchRestaurants();
   return restaurants.map((restaurant) => ({ id: restaurant.id }));
 }
 
-export async function generateMetadata({ params }: RestaurantPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<RestaurantPageParams> }): Promise<Metadata> {
+  const { id } = await params;
   try {
-    const restaurant = await fetchRestaurantById(params.id);
+    const restaurant = await fetchRestaurantById(id);
     return buildMetadata({
       title: `${restaurant.name} | UbearItz`,
       description: restaurant.description,
@@ -29,13 +28,14 @@ export async function generateMetadata({ params }: RestaurantPageProps): Promise
     return buildMetadata({
       title: "Restaurant not found | UbearItz",
       description: "The restaurant you are looking for does not exist.",
-      path: `/restaurants/${params.id}`,
+      path: `/restaurants/${id}`,
     });
   }
 }
 
-export default async function RestaurantPage({ params }: RestaurantPageProps) {
-  const restaurant = await fetchRestaurantById(params.id).catch(() => null);
+export default async function RestaurantPage({ params }: { params: Promise<RestaurantPageParams> }) {
+  const { id } = await params;
+  const restaurant = await fetchRestaurantById(id).catch(() => null);
   if (!restaurant) {
     notFound();
   }

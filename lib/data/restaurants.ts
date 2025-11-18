@@ -6,7 +6,12 @@ export const fetchRestaurants = cache(async () => {
 });
 
 export const fetchRestaurantById = cache(async (id: string) => {
-  return getRestaurantById(id);
+  try {
+    return await getRestaurantById(id);
+  } catch (error) {
+    console.error("Failed to load restaurant", id, error);
+    throw error;
+  }
 });
 
 export const fetchRestaurantByEmail = cache(async (email: string) => {

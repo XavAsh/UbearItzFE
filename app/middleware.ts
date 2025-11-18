@@ -13,23 +13,42 @@ function detectLocale(req: NextRequest): string {
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const segments = pathname.split("/").filter(Boolean);
+  const potentialLocale = segments[0];
+  const hasLocalePrefix = SUPPORTED_LOCALES.includes(potentialLocale as any);
+  const strippedPathname = hasLocalePrefix ? `/${segments.slice(1).join("/")}` || "/" : pathname;
 
-  // Skip Next internals and files
-  if (
+  const shouldBypass =
     pathname.startsWith("/_next") ||
     pathname.startsWith("/api") ||
     pathname.startsWith("/favicon") ||
     pathname.startsWith("/icons") ||
     pathname.startsWith("/images") ||
-    pathname.startsWith("/assets")
-  ) {
+    pathname.startsWith("/assets") ||
+    strippedPathname === "/404" ||
+    strippedPathname === "/500";
+
+  if (shouldBypass) {
     return NextResponse.next();
   }
 
-  // Allow admin routes to be locale-less
-  if (pathname.startsWith("/admin")) {
-    // Protect admin routes by auth token
-    const token = req.cookies.get("auth-token")?.value;
+  if (hasLocalePrefix) {
+    const url = req.nextUrl.clone();
+    url.pathname = strippedPathname || "/";
+    const response = NextResponse.redirect(url);
+    response.cookies.set("NEXT_LOCALE", potentialLocale, { path: "/" });
+    return response;
+  }
+
+  const token = req.cookies.get("auth-token")?.value;
+
+  const protectedPaths = ["/cart", "/orders", "/account"];
+  if (protectedPaths.some((p) => strippedPathname === p || strippedPathname.startsWith(`${p}/`)) && !token) {
+    const url = new URL(`/login`, req.url);
+    return NextResponse.redirect(url);
+  }
+
+  if (strippedPathname.startsWith("/admin")) {
     if (!token) {
       const url = new URL(`/login`, req.url);
       return NextResponse.redirect(url);
@@ -37,21 +56,10 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  const hasLocalePrefix = SUPPORTED_LOCALES.some((l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`));
-  if (!hasLocalePrefix) {
-    const locale = detectLocale(req);
-    const url = new URL(`/${locale}${pathname}`, req.url);
-    return NextResponse.redirect(url);
-  }
-
-  // Auth protect locale-aware paths
-  const token = req.cookies.get("auth-token")?.value;
-  const locale = pathname.split("/")[1];
-  const subpath = pathname.slice(locale.length + 1); // includes leading slash
-  const protectedPaths = ["/cart", "/orders", "/account"];
-  if (protectedPaths.some((p) => subpath.startsWith(p)) && !token) {
-    const url = new URL(`/${locale}/login`, req.url);
-    return NextResponse.redirect(url);
+  if (!req.cookies.get("NEXT_LOCALE")) {
+    const response = NextResponse.next();
+    response.cookies.set("NEXT_LOCALE", detectLocale(req), { path: "/" });
+    return response;
   }
 
   return NextResponse.next();

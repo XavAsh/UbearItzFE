@@ -2,17 +2,19 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useOrderStore } from "@/stores/orderStore";
 import type { Order } from "@/types";
 
-const mockOrders: Order[] = [
-  {
-    id: "o-test-1",
-    userId: "u-1",
-    restaurantId: "r-1",
-    items: [{ dishId: "d-1", name: "Test Dish", price: 10, quantity: 1 }],
-    total: 10,
-    status: "pending",
-    createdAt: new Date().toISOString(),
-  },
-];
+const { mockOrders } = vi.hoisted(() => ({
+  mockOrders: [
+    {
+      id: "o-test-1",
+      userId: "u-1",
+      restaurantId: "r-1",
+      items: [{ dishId: "d-1", name: "Test Dish", price: 10, quantity: 1 }],
+      total: 10,
+      status: "pending",
+      createdAt: new Date().toISOString(),
+    },
+  ] satisfies Order[],
+}));
 
 vi.mock("@/services/api/orders", () => ({
   getOrders: vi.fn().mockResolvedValue(mockOrders),

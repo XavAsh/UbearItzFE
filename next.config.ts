@@ -5,10 +5,6 @@ import bundleAnalyzer from "@next/bundle-analyzer";
 const withBundleAnalyzer = bundleAnalyzer({ enabled: process.env.ANALYZE === "true" });
 
 const nextConfig: NextConfig = {
-  i18n: {
-    locales: ["en", "fr"],
-    defaultLocale: "en",
-  },
   turbopack: {},
 };
 

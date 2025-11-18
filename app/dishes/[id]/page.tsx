@@ -8,13 +8,12 @@ import { buildDishSchema, buildMetadata } from "@/lib/seo";
 
 export const revalidate = 60;
 
-type DishPageProps = {
-  params: { id: string };
-};
+type DishPageParams = { id: string };
 
-export async function generateMetadata({ params }: DishPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<DishPageParams> }): Promise<Metadata> {
+  const { id } = await params;
   try {
-    const dish = await fetchDishById(params.id);
+    const dish = await fetchDishById(id);
     return buildMetadata({
       title: `${dish.name} | UbearItz`,
       description: dish.description,
@@ -25,13 +24,13 @@ export async function generateMetadata({ params }: DishPageProps): Promise<Metad
     return buildMetadata({
       title: "Dish not found | UbearItz",
       description: "The dish you are looking for is unavailable.",
-      path: `/dishes/${params.id}`,
+      path: `/dishes/${id}`,
     });
   }
 }
 
-export default async function DishPage({ params }: DishPageProps) {
-  const { id } = params;
+export default async function DishPage({ params }: { params: Promise<DishPageParams> }) {
+  const { id } = await params;
   const dish = await fetchDishById(id).catch(() => null);
   if (!dish) {
     notFound();
