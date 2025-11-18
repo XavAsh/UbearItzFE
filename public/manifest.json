@@ -1,0 +1,24 @@
+{
+  "name": "UbearItz",
+  "short_name": "UbearItz",
+  "description": "Discover and order dishes from the best restaurants in Annecy.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fefdf5",
+  "theme_color": "#e9dd1a",
+  "icons": [
+    {
+      "src": "/globe.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/window.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
+

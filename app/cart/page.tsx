@@ -1,40 +1,20 @@
-"use client";
+import dynamic from "next/dynamic";
+import { buildMetadata } from "@/lib/seo";
 
-import { useCartStore } from "@/stores/cartStore";
-import CheckoutButton from "./CheckoutButton";
+const CartPageClient = dynamic(() => import("./CartPageClient"), {
+  ssr: false,
+  loading: () => <p>Loading cart…</p>,
+});
+
+export const metadata = {
+  ...buildMetadata({
+    title: "Cart | UbearItz",
+    description: "Review and update your UbearItz cart before checkout.",
+    path: "/cart",
+  }),
+  robots: { index: false, follow: false },
+};
 
 export default function CartPage() {
-  const { items, totalPrice, itemCount, removeItem, decrementItem, addItem, clear } = useCartStore();
-  return (
-    <main>
-      <h1>Cart</h1>
-      <ul>
-        {items.map((item) => (
-          <li key={item.dishId}>
-            {item.name} - {item.price} - {item.quantity}
-            <button onClick={() => removeItem(item.dishId)}>Remove</button>
-            <button onClick={() => decrementItem(item.dishId)}>Decrement</button>
-            <button
-              onClick={() =>
-                addItem({
-                  id: item.dishId,
-                  name: item.name,
-                  price: item.price,
-                  image: "",
-                  description: "",
-                  restaurantId: item.restaurantId,
-                })
-              }
-            >
-              Increment
-            </button>
-          </li>
-        ))}
-        <p>Total Price: {totalPrice()}</p>
-        <p>Item Count: {itemCount()}</p>
-        <button onClick={() => clear()}>Clear</button>
-        <CheckoutButton />
-      </ul>
-    </main>
-  );
+  return <CartPageClient />;
 }

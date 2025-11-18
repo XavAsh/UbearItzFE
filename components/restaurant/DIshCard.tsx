@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Card from "@/components/ui/Card";
 import type { Dish } from "@/types";
 
@@ -10,7 +11,7 @@ export default function DishCard({ dish, showRestaurant = false }: DishCardProps
   return (
     <Card href={`/dishes/${dish.id}`}>
       <div className="aspect-video w-full overflow-hidden bg-gray-100">
-        <img src={dish.image || "/placeholder-dish.jpg"} alt={dish.name} className="w-full h-full object-cover" />
+        <Image src={dish.image} alt={dish.name} width={640} height={360} className="w-full h-full object-cover" loading="lazy" sizes="(max-width: 768px) 100vw, 50vw" />
       </div>
       <div className="p-4">
         <h3 className="font-semibold text-lg mb-1">{dish.name}</h3>

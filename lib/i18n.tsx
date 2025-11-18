@@ -5,7 +5,7 @@ import en from "@/locales/en.json";
 import fr from "@/locales/fr.json";
 
 type Messages = Record<string, string>;
-type Locale = "en" | "fr";
+export type Locale = "en" | "fr";
 
 const allMessages: Record<Locale, Messages> = { en, fr } as const;
 
@@ -17,29 +17,39 @@ type I18nContextValue = {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-function readInitialLocale(): Locale {
-  if (typeof window === "undefined") return "en";
+function readInitialLocale(fallback: Locale): Locale {
+  if (typeof window === "undefined") return fallback;
+  const fromDocument = document.documentElement.lang;
+  if (fromDocument === "en" || fromDocument === "fr") return fromDocument;
   const fromStorage = window.localStorage.getItem("locale");
   if (fromStorage === "en" || fromStorage === "fr") return fromStorage;
   const fromNavigator = navigator.language?.startsWith("fr") ? "fr" : "en";
   return fromNavigator;
 }
 
-export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
+function persistLocale(locale: Locale) {
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem("locale", locale);
+    document.documentElement.lang = locale;
+  }
+  if (typeof document !== "undefined") {
+    document.cookie = `locale=${locale}; path=/; max-age=31536000`;
+    document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000`;
+  }
+}
+
+export function I18nProvider({ children, initialLocale = "en" }: { children: React.ReactNode; initialLocale?: Locale }) {
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
 
   useEffect(() => {
-    const l = readInitialLocale();
-    setLocaleState(l);
-    document.cookie = `locale=${l}; path=/; max-age=31536000`;
-  }, []);
+    const resolved = readInitialLocale(initialLocale);
+    setLocaleState(resolved);
+    persistLocale(resolved);
+  }, [initialLocale]);
 
   const setLocale = (l: Locale) => {
     setLocaleState(l);
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem("locale", l);
-    }
-    document.cookie = `locale=${l}; path=/; max-age=31536000`;
+    persistLocale(l);
   };
 
   const messages = allMessages[locale] ?? allMessages.en;

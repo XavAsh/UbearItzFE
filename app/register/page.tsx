@@ -1,8 +1,11 @@
 import CreateAccountForm from "@/components/auth/CreateAccountForm";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Create account",
-};
+export const metadata = buildMetadata({
+  title: "Create account | UbearItz",
+  description: "Create your UbearItz account to start ordering from local restaurants.",
+  path: "/register",
+});
 
 export default function CreateAccountPage() {
   return (

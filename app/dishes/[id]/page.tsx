@@ -1,14 +1,44 @@
-import { getDishById } from "@/services/api/dishes";
-import Link from "next/link";
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { AddToCartButton } from "./AddToCartButton";
 import Image from "next/image";
 import BackToRestaurants from "@/components/common/BackToRestaurants";
+import { fetchDishById } from "@/lib/data/dishes";
+import { buildDishSchema, buildMetadata } from "@/lib/seo";
 
-export default async function DishPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const dish = await getDishById(id);
+export const revalidate = 60;
+
+type DishPageProps = {
+  params: { id: string };
+};
+
+export async function generateMetadata({ params }: DishPageProps): Promise<Metadata> {
+  try {
+    const dish = await fetchDishById(params.id);
+    return buildMetadata({
+      title: `${dish.name} | UbearItz`,
+      description: dish.description,
+      path: `/dishes/${dish.id}`,
+      images: [dish.image],
+    });
+  } catch {
+    return buildMetadata({
+      title: "Dish not found | UbearItz",
+      description: "The dish you are looking for is unavailable.",
+      path: `/dishes/${params.id}`,
+    });
+  }
+}
+
+export default async function DishPage({ params }: DishPageProps) {
+  const { id } = params;
+  const dish = await fetchDishById(id).catch(() => null);
+  if (!dish) {
+    notFound();
+  }
   return (
     <main className="max-w-5xl mx-auto px-4 py-8">
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: JSON.stringify(buildDishSchema(dish)) }} />
       <div className="mb-4">
         <BackToRestaurants restaurantId={dish.restaurantId} className="text-sm text-gray-600 hover:underline mb-4 inline-block" />
       </div>

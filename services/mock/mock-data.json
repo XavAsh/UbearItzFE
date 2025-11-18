@@ -47,9 +47,31 @@
     }
   ],
   "users": [
-    { "id": "u-1", "email": "alice@example.com", "password": "password123", "role": "customer", "image": "https://placehold.co/600x400/EEE/31343C" },
-    { "id": "u-2", "email": "chef@bearitz.com", "password": "secretchef", "role": "restaurant", "image": "https://placehold.co/600x400/EEE/31343C" },
+    { "id": "u-1", "email": "alice@example.com", "password": "password123", "role": "customer", "avatar": "https://placehold.co/600x400/EEE/31343C" },
+    { "id": "u-2", "email": "chef@bearitz.com", "password": "secretchef", "role": "restaurant", "avatar": "https://placehold.co/600x400/EEE/31343C" },
     { "id": "u-3", "email": "admin@example.com", "password": "admin123", "role": "admin" }
   ],
-  "orders": []
+  "orders": [
+    {
+      "id": "o-seed-1",
+      "userId": "u-guest",
+      "restaurantId": "r-1",
+      "items": [
+        { "dishId": "d-1", "name": "Truffle Pasta", "price": 18.5, "quantity": 1 },
+        { "dishId": "d-2", "name": "Herb Chicken", "price": 16, "quantity": 2 }
+      ],
+      "total": 50.5,
+      "status": "pending",
+      "createdAt": "2025-01-21T18:00:00.000Z"
+    },
+    {
+      "id": "o-seed-2",
+      "userId": "u-guest",
+      "restaurantId": "r-2",
+      "items": [{ "dishId": "d-3", "name": "Salmon Nigiri (6)", "price": 12, "quantity": 3 }],
+      "total": 36,
+      "status": "ready",
+      "createdAt": "2025-01-20T12:30:00.000Z"
+    }
+  ]
 }

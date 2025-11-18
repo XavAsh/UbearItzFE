@@ -14,10 +14,18 @@ type NewRestaurantInput = {
   password: string; // captured but not used in mock
 };
 
+/**
+ * Restaurant store keeps a cached list of restaurants fetched from the API.
+ * All mutations happen client-side for now (mock-only).
+ */
 type RestaurantState = {
   restaurants: Restaurant[];
   loaded: boolean;
-  loadAll: () => Promise<void>;
+  status: "idle" | "loading" | "ready" | "error";
+  error?: string;
+  loadAll: (options?: { force?: boolean }) => Promise<void>;
+  hasRestaurants: () => boolean;
+  searchRestaurants: (term: string) => Restaurant[];
   addRestaurant: (input: NewRestaurantInput) => Promise<Restaurant>;
   removeRestaurant: (id: string) => void;
   updateRestaurant: (id: string, updates: Partial<Restaurant>) => void;
@@ -30,10 +38,33 @@ export const useRestaurantStore = create<RestaurantState>()(
     (set, get) => ({
       restaurants: [],
       loaded: false,
-      async loadAll() {
-        if (get().loaded && get().restaurants.length > 0) return;
-        const list = await getRestaurants();
-        set({ restaurants: list, loaded: true });
+      status: "idle",
+      error: undefined,
+      async loadAll(options = {}) {
+        if (!options.force && get().loaded && get().restaurants.length > 0) {
+          set({ status: "ready" });
+          return;
+        }
+        if (get().status === "loading") return;
+        set({ status: "loading", error: undefined });
+        try {
+          const list = await getRestaurants();
+          set({ restaurants: list, loaded: true, status: "ready" });
+        } catch (err) {
+          const message = err instanceof Error ? err.message : "Unable to load restaurants";
+          set({ status: "error", error: message });
+        }
+      },
+      hasRestaurants: () => get().restaurants.length > 0,
+      searchRestaurants: (term: string) => {
+        const normalized = term.trim().toLowerCase();
+        if (!normalized) return get().restaurants;
+        return get().restaurants.filter(
+          (r) =>
+            r.name.toLowerCase().includes(normalized) ||
+            r.city?.toLowerCase().includes(normalized) ||
+            r.description?.toLowerCase().includes(normalized)
+        );
       },
       async addRestaurant(input) {
         const newRestaurant: Restaurant = {
@@ -49,12 +80,13 @@ export const useRestaurantStore = create<RestaurantState>()(
         };
         const current = get().restaurants;
         const updated = [newRestaurant, ...current];
-        set({ restaurants: updated, loaded: true });
+        set({ restaurants: updated, loaded: true, status: "ready" });
         return newRestaurant;
       },
       removeRestaurant(id) {
         const next = get().restaurants.filter((r) => r.id !== id);
-        set({ restaurants: next });
+        const wasLoaded = get().loaded;
+        set({ restaurants: next, loaded: wasLoaded && next.length > 0 });
       },
       updateRestaurant(id, updates) {
         const restaurants = get().restaurants;

@@ -7,7 +7,7 @@ import type { Restaurant } from "@/types";
 
 export default function RestaurantInfoPage() {
   const { currentUser } = useAuthStore();
-  const { restaurants, loadAll, updateRestaurant, getRestaurantByEmail } = useRestaurantStore();
+  const { loadAll, updateRestaurant, getRestaurantByEmail } = useRestaurantStore();
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [form, setForm] = useState({
     name: "",

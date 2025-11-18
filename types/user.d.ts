@@ -6,4 +6,9 @@ export interface User {
   role: UserRole;
   name?: string;
   avatar?: string;
+  /**
+   * Only present inside mock data / admin tooling.
+   * Real APIs must never expose passwords.
+   */
+  password?: string;
 }

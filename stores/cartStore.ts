@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import type { Dish } from "@/types";
 
+/**
+ * Cart item is normalized to keep the cart resilient even if the dish catalog changes.
+ */
 type CartItem = {
   dishId: string;
   name: string;
@@ -9,6 +12,9 @@ type CartItem = {
   restaurantId: string;
 };
 
+/**
+ * Cart state exposes imperative helpers (add, decrement, clear) and computed getters.
+ */
 type CartState = {
   items: CartItem[];
   addItem: (dish: Dish) => void;
@@ -17,6 +23,9 @@ type CartState = {
   clear: () => void;
   totalPrice: () => number;
   itemCount: () => number;
+  isEmpty: () => boolean;
+  getItem: (dishId: string) => CartItem | undefined;
+  subtotalByRestaurant: (restaurantId: string) => number;
 };
 
 export const useCartStore = create<CartState>((set, get) => ({
@@ -59,4 +68,10 @@ export const useCartStore = create<CartState>((set, get) => ({
   clear: () => set({ items: [] }),
   totalPrice: () => get().items.reduce<number>((sum: number, i: CartItem) => sum + i.price * i.quantity, 0),
   itemCount: () => get().items.reduce<number>((sum: number, i: CartItem) => sum + i.quantity, 0),
+  isEmpty: () => get().items.length === 0,
+  getItem: (dishId: string) => get().items.find((item) => item.dishId === dishId),
+  subtotalByRestaurant: (restaurantId: string) =>
+    get()
+      .items.filter((item) => item.restaurantId === restaurantId)
+      .reduce((sum, item) => sum + item.price * item.quantity, 0),
 }));

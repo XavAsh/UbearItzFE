@@ -1,8 +1,12 @@
 import LoginForm from "@/components/auth/LoginForm";
 import ClientLogin from "@/app/login/ClientLogin";
-export const metadata = {
-  title: "Login",
-};
+import { buildMetadata } from "@/lib/seo";
+
+export const metadata = buildMetadata({
+  title: "Login | UbearItz",
+  description: "Access your UbearItz account to manage orders and cart.",
+  path: "/login",
+});
 
 export default function LoginPage() {
   return (

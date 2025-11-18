@@ -7,7 +7,9 @@ import { useAuthStore } from "@/stores/authStore";
 
 export default function Header() {
   const { t } = useI18n();
-  const { currentUser, logout } = useAuthStore();
+  const currentUser = useAuthStore((state) => state.currentUser);
+  const logout = useAuthStore((state) => state.logout);
+  const hasRole = useAuthStore((state) => state.hasRole);
   const handleLogout = () => {
     logout();
     if (typeof window !== "undefined") {
@@ -20,7 +22,7 @@ export default function Header() {
         <Link href="/" className="font-semibold">
           UbearItz
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
+        <nav className="flex items-center gap-4 text-sm" aria-label="Primary navigation">
           {!currentUser && (
             <>
               <Link href="/login" className="underline">
@@ -32,7 +34,7 @@ export default function Header() {
             </>
           )}
 
-          {currentUser?.role === "admin" && (
+          {hasRole("admin") && (
             <>
               <Link href="/admin" className="underline">
                 {t("nav.admin")}
@@ -43,7 +45,7 @@ export default function Header() {
             </>
           )}
 
-          {currentUser?.role === "restaurant" && (
+          {hasRole("restaurant") && (
             <>
               <Link href="/restaurant" className="underline">
                 {t("nav.restaurant")}
@@ -60,7 +62,7 @@ export default function Header() {
             </>
           )}
 
-          {currentUser && currentUser.role === "customer" && (
+          {hasRole("customer") && (
             <>
               <Link href="/orders" className="underline">
                 {t("nav.history")}
