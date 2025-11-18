@@ -61,12 +61,6 @@ export default function CreateAccountForm({ onSubmit, submitLabel = "Create acco
           placeholder="••••••••"
         />
       </div>
-      <div className="space-y-1">
-        <label htmlFor="terms" className="block text-sm font-medium">
-          I am a buisness
-        </label>
-        <input id="terms" type="checkbox" required className="w-full border rounded px-3 py-2" />
-      </div>
       <button type="submit" disabled={loading} className="w-full bg-black text-white rounded px-4 py-2 disabled:opacity-60">
         {loading ? "Please wait…" : submitLabel}
       </button>

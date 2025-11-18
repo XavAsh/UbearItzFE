@@ -5,6 +5,10 @@
       "name": "Le Bearitz",
       "description": "Cozy bistro with seasonal plates and local wines.",
       "image": "/images/restaurants/le-bearitz.webp",
+      "address": "15 Rue de la Paix",
+      "postalCode": "74000",
+      "city": "Annecy",
+      "contactEmail": "chef@bearitz.com",
       "dishes": [
         {
           "id": "d-1",

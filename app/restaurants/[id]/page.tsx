@@ -1,10 +1,44 @@
-import { getRestaurantById } from "@/services/api/restaurants";
+"use client";
+
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { useRestaurantStore } from "@/stores/restaurantStore";
+import type { Restaurant } from "@/types";
 import BackToRestaurants from "@/components/common/BackToRestaurants";
 import DishCard from "@/components/restaurant/DIshCard";
 
-export default async function RestaurantPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
-  const restaurant = await getRestaurantById(id);
+export default function RestaurantPage() {
+  const params = useParams();
+  const id = params.id as string;
+  const { restaurants, loadAll, getRestaurantById } = useRestaurantStore();
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadAll().then(() => {
+      const found = getRestaurantById(id);
+      setRestaurant(found);
+      setLoading(false);
+    });
+  }, [id, loadAll, getRestaurantById]);
+
+  if (loading) {
+    return (
+      <main className="p-6">
+        <p>Loading restaurant...</p>
+      </main>
+    );
+  }
+
+  if (!restaurant) {
+    return (
+      <main className="p-6">
+        <p>Restaurant not found.</p>
+        <BackToRestaurants className="text-sm text-gray-600 hover:underline mt-4 inline-block" />
+      </main>
+    );
+  }
+
   return (
     <main>
       <div className="mb-6">
@@ -17,6 +51,7 @@ export default async function RestaurantPage({ params }: { params: Promise<{ id:
         {restaurant.dishes.map((d) => (
           <DishCard key={d.id} dish={d} />
         ))}
+        {restaurant.dishes.length === 0 && <p className="text-gray-500">No dishes available.</p>}
       </div>
     </main>
   );

@@ -20,6 +20,9 @@ type RestaurantState = {
   loadAll: () => Promise<void>;
   addRestaurant: (input: NewRestaurantInput) => Promise<Restaurant>;
   removeRestaurant: (id: string) => void;
+  updateRestaurant: (id: string, updates: Partial<Restaurant>) => void;
+  getRestaurantByEmail: (email: string) => Restaurant | null;
+  getRestaurantById: (id: string) => Restaurant | null;
 };
 
 export const useRestaurantStore = create<RestaurantState>()(
@@ -52,6 +55,17 @@ export const useRestaurantStore = create<RestaurantState>()(
       removeRestaurant(id) {
         const next = get().restaurants.filter((r) => r.id !== id);
         set({ restaurants: next });
+      },
+      updateRestaurant(id, updates) {
+        const restaurants = get().restaurants;
+        const updated = restaurants.map((r) => (r.id === id ? { ...r, ...updates } : r));
+        set({ restaurants: updated });
+      },
+      getRestaurantByEmail(email) {
+        return get().restaurants.find((r) => r.contactEmail === email) || null;
+      },
+      getRestaurantById(id) {
+        return get().restaurants.find((r) => r.id === id) || null;
       },
     }),
     { name: "restaurants" }
