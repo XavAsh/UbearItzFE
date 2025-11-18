@@ -76,5 +76,11 @@
   "auth.accessDeniedTitle": "Access denied",
   "auth.accessDeniedMessage": "You do not have permission to view this page.",
   "auth.loading": "Loading session…",
-  "actions.saving": "Saving…"
+  "actions.saving": "Saving…",
+  "notFound.title": "Page not found",
+  "notFound.description": "We couldn't find the page you're searching for.",
+  "notFound.cta": "Go back home",
+  "error.title": "Something went wrong",
+  "error.description": "An unexpected error occurred. Please try again later.",
+  "error.cta": "Back to safety"
 }

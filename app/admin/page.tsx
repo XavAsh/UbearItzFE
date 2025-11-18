@@ -1,10 +1,5 @@
-import dynamic from "next/dynamic";
 import { buildMetadata } from "@/lib/seo";
-
-const AdminPageClient = dynamic(() => import("./AdminPageClient"), {
-  ssr: false,
-  loading: () => <p>Loading admin dashboard…</p>,
-});
+import AdminClientLoader from "./AdminClientLoader";
 
 export const metadata = {
   ...buildMetadata({
@@ -16,5 +11,5 @@ export const metadata = {
 };
 
 export default function AdminRestaurantsPage() {
-  return <AdminPageClient />;
+  return <AdminClientLoader />;
 }

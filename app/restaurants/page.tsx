@@ -27,33 +27,40 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function RestaurantsPage() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const locale = (cookieStore.get("NEXT_LOCALE")?.value as Locale | undefined) ?? (cookieStore.get("locale")?.value as Locale | undefined) ?? "en";
   const dict = getDictionary(locale);
+
+  let restaurants: Awaited<ReturnType<typeof fetchRestaurants>> = [];
+  let errorMessage: string | null = null;
+
   try {
-    const restaurants = await fetchRestaurants();
-
-    if (!restaurants.length) {
-      return (
-        <main className="p-6">
-          <h1 className="text-3xl font-semibold mb-4">{dict["catalog.title"]}</h1>
-          <p>{dict["catalog.empty"]}</p>
-        </main>
-      );
-    }
-
-    return (
-      <main className="p-6">
-        <RestaurantCatalog restaurants={restaurants} headingLevel={1} />
-      </main>
-    );
+    restaurants = await fetchRestaurants();
   } catch (error) {
-    const message = error instanceof Error ? error.message : dict["catalog.error"];
+    errorMessage = error instanceof Error ? error.message : dict["catalog.error"];
+  }
+
+  if (errorMessage) {
     return (
       <main className="p-6 space-y-4">
         <h1 className="text-3xl font-semibold">{dict["catalog.title"]}</h1>
-        <p className="text-red-600">{message}</p>
+        <p className="text-red-600">{errorMessage}</p>
       </main>
     );
   }
+
+  if (!restaurants.length) {
+    return (
+      <main className="p-6">
+        <h1 className="text-3xl font-semibold mb-4">{dict["catalog.title"]}</h1>
+        <p>{dict["catalog.empty"]}</p>
+      </main>
+    );
+  }
+
+  return (
+    <main className="p-6">
+      <RestaurantCatalog restaurants={restaurants} headingLevel={1} />
+    </main>
+  );
 }

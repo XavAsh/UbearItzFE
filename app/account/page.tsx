@@ -1,10 +1,5 @@
-import dynamic from "next/dynamic";
 import { buildMetadata } from "@/lib/seo";
-
-const AccountPageClient = dynamic(() => import("./AccountPageClient"), {
-  ssr: false,
-  loading: () => <p>Loading account…</p>,
-});
+import AccountClientLoader from "./AccountClientLoader";
 
 export const metadata = {
   ...buildMetadata({
@@ -16,5 +11,5 @@ export const metadata = {
 };
 
 export default function AccountPage() {
-  return <AccountPageClient />;
+  return <AccountClientLoader />;
 }

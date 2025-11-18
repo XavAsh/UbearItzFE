@@ -1,10 +1,5 @@
-import dynamic from "next/dynamic";
 import { buildMetadata } from "@/lib/seo";
-
-const OrdersPageClient = dynamic(() => import("./OrdersPageClient"), {
-  ssr: false,
-  loading: () => <p>Loading orders…</p>,
-});
+import OrdersClientLoader from "./OrdersClientLoader";
 
 export const metadata = {
   ...buildMetadata({
@@ -16,5 +11,5 @@ export const metadata = {
 };
 
 export default function OrdersPage() {
-  return <OrdersPageClient />;
+  return <OrdersClientLoader />;
 }

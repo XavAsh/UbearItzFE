@@ -12,7 +12,18 @@ const inter = Inter({
   subsets: ["latin"],
 });
 
+const metadataBase = (() => {
+  const fallback = "http://localhost:3000";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? fallback;
+  try {
+    return new URL(siteUrl);
+  } catch {
+    return new URL(fallback);
+  }
+})();
+
 export const metadata: Metadata = {
+  metadataBase,
   ...buildMetadata({
     title: "UbearItz | Order from local restaurants",
     description: "UbearItz helps you discover and order from the best restaurants near you.",
@@ -21,12 +32,12 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const initialLocale = (cookieStore.get("NEXT_LOCALE")?.value as Locale | undefined) ?? (cookieStore.get("locale")?.value as Locale | undefined) ?? "en";
 
   const skipLabel = initialLocale === "fr" ? "Aller au contenu" : "Skip to content";

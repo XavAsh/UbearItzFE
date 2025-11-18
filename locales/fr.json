@@ -76,5 +76,11 @@
   "auth.accessDeniedTitle": "Accès refusé",
   "auth.accessDeniedMessage": "Vous n’avez pas les droits nécessaires pour accéder à cette page.",
   "auth.loading": "Chargement de la session…",
-  "actions.saving": "Enregistrement…"
+  "actions.saving": "Enregistrement…",
+  "notFound.title": "Page introuvable",
+  "notFound.description": "Nous n'avons pas trouvé la page recherchée.",
+  "notFound.cta": "Retour à l'accueil",
+  "error.title": "Un problème est survenu",
+  "error.description": "Une erreur inattendue s'est produite. Veuillez réessayer plus tard.",
+  "error.cta": "Retour à l'accueil"
 }

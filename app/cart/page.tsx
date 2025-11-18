@@ -1,10 +1,5 @@
-import dynamic from "next/dynamic";
 import { buildMetadata } from "@/lib/seo";
-
-const CartPageClient = dynamic(() => import("./CartPageClient"), {
-  ssr: false,
-  loading: () => <p>Loading cart…</p>,
-});
+import CartClientLoader from "./CartClientLoader";
 
 export const metadata = {
   ...buildMetadata({
@@ -16,5 +11,5 @@ export const metadata = {
 };
 
 export default function CartPage() {
-  return <CartPageClient />;
+  return <CartClientLoader />;
 }
