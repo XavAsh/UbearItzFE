@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuthStore } from "@/stores/authStore";
 import type { Restaurant } from "@/types";
 import RequireAuth from "@/components/auth/RequireAuth";
-import { getRestaurantByEmail, updateMyRestaurant } from "@/services/api/restaurants";
+import { getMyRestaurant, updateMyRestaurant } from "@/services/api/restaurants";
 import { useAsyncData } from "@/lib/hooks/useAsyncData";
 import { useI18n } from "@/lib/i18n";
 
@@ -20,14 +20,11 @@ export default function RestaurantInfoPage() {
   const [saved, setSaved] = useState(false);
   const { t } = useI18n();
 
-  const email = currentUser?.email ?? null;
+  const cacheKey = currentUser?.id ? `restaurant-me-${currentUser.id}` : "restaurant-me-guest";
   const { data, error, loading } = useAsyncData(
-    email ? `restaurant-me-${email}` : "restaurant-me-guest",
-    () => {
-      if (!email) return Promise.reject(new Error("Missing restaurant email"));
-      return getRestaurantByEmail(email);
-    },
-    { enabled: Boolean(email), ttlMs: 60_000 },
+    cacheKey,
+    () => getMyRestaurant(),
+    { enabled: Boolean(currentUser?.id), ttlMs: 60_000 },
   );
 
   useEffect(() => {

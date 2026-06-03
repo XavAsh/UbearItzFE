@@ -32,6 +32,7 @@ function mapDish(d: ApiDish): Dish {
     description: d.description ?? "",
     image: d.imageUrl ?? "",
     price: d.priceCents / 100,
+    isActive: d.isActive,
   };
 }
 
@@ -65,11 +66,11 @@ export async function getRestaurantById(id: string): Promise<Restaurant> {
   return found;
 }
 
-// Kept for compatibility with existing pages: restaurant identity is resolved by token on the backend.
-export async function getRestaurantByEmail(_email: string): Promise<Restaurant> {
+// Token-scoped restaurant: identity is resolved by the authenticated user on the backend.
+export async function getMyRestaurant(): Promise<Restaurant> {
   const r = await apiFetch<ApiRestaurant>("/restaurants/me", { auth: true });
-  const dishes = await apiFetch<ApiDish[]>(`/restaurants/${r.id}/dishes`);
-  return mapRestaurant(r, dishes.filter((d) => d.isActive).map(mapDish));
+  const dishes = await apiFetch<ApiDish[]>(`/restaurants/me/dishes`, { auth: true });
+  return mapRestaurant(r, dishes.map(mapDish));
 }
 
 export async function createRestaurantAsAdmin(input: {

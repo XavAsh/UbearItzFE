@@ -26,7 +26,7 @@ type OrderState = {
   status: RequestState;
   error?: string;
   hydrateFromMock: (force?: boolean) => Promise<void>;
-  placeOrder: (input: { userId: string; restaurantId: string; items: OrderItem[] }) => Promise<Order>;
+  placeOrder: (input: { restaurantId: string; items: OrderItem[] }) => Promise<Order>;
   clear: () => void;
   getOrderById: (id: string) => Order | undefined;
   getOrdersByStatus: (status: OrderStatus) => Order[];
@@ -56,10 +56,10 @@ export const useOrderStore = create<OrderState>()(
           set({ status: "error", error: message });
         }
       },
-      async placeOrder({ userId, restaurantId, items }) {
+      async placeOrder({ restaurantId, items }) {
         set({ status: "loading", error: undefined });
         try {
-          const order = await createOrder({ userId, restaurantId, items });
+          const order = await createOrder({ restaurantId, items });
           set({ orders: [order, ...get().orders], status: "ready" });
           cleanupLegacyStorage();
           return order;

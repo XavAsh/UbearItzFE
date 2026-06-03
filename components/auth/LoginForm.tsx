@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { getLoginErrorMessage } from "@/lib/authErrors";
 
 type LoginFormProps = {
   onSubmit?: (data: { email: string; password: string }) => void | Promise<void>;
@@ -10,7 +11,7 @@ type LoginFormProps = {
 };
 
 export default function LoginForm({ onSubmit, submitLabel = "Log in", showLinks = true }: LoginFormProps) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,7 +26,7 @@ export default function LoginForm({ onSubmit, submitLabel = "Log in", showLinks 
       if (!onSubmit) return;
       await onSubmit({ email, password });
     } catch (err) {
-      setError(err instanceof Error ? err.message : t("error.description"));
+      setError(getLoginErrorMessage(err, locale));
     } finally {
       setLoading(false);
     }

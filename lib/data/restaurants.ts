@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { getRestaurantByEmail, getRestaurantById, getRestaurants } from "@/services/api/restaurants";
+import { getMyRestaurant, getRestaurantById, getRestaurants } from "@/services/api/restaurants";
 
 export const fetchRestaurants = cache(async () => {
   return getRestaurants();
@@ -14,8 +14,8 @@ export const fetchRestaurantById = cache(async (id: string) => {
   }
 });
 
-export const fetchRestaurantByEmail = cache(async (email: string) => {
-  return getRestaurantByEmail(email);
+export const fetchRestaurantByEmail = cache(async (_email: string) => {
+  return getMyRestaurant();
 });
 
 

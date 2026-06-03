@@ -17,11 +17,13 @@ export type ApiProblemDetails = {
 export class ApiError extends Error {
   public readonly status: number;
   public readonly body?: unknown;
+  public readonly retryAfterSeconds?: number;
 
-  constructor(message: string, status: number, body?: unknown) {
+  constructor(message: string, status: number, body?: unknown, retryAfterSeconds?: number) {
     super(message);
     this.status = status;
     this.body = body;
+    this.retryAfterSeconds = retryAfterSeconds;
   }
 }
 
@@ -67,7 +69,10 @@ export async function apiFetch<T>(
       (body && typeof body === "object" && body !== null && "detail" in body && typeof (body as any).detail === "string"
         ? (body as any).detail
         : res.statusText) || "Request failed";
-    throw new ApiError(msg, res.status, body);
+    const retryAfterHeader = res.headers.get("Retry-After");
+    const retryAfterSeconds =
+      retryAfterHeader && /^\d+$/.test(retryAfterHeader) ? Number.parseInt(retryAfterHeader, 10) : undefined;
+    throw new ApiError(msg, res.status, body, retryAfterSeconds);
   }
 
   return body as T;

@@ -9,10 +9,8 @@ import { slugify } from "@/lib/utils";
 type NewRestaurantInput = {
   name: string;
   address: string;
-  postalCode: string;
-  city: string;
-  contactEmail: string;
-  password: string; // captured but not used in mock
+  email: string; // owner/restaurant email used to create the owner account
+  password: string;
   slug?: string;
   imageUrl?: string;
 };
@@ -32,7 +30,6 @@ type RestaurantState = {
   addRestaurant: (input: NewRestaurantInput) => Promise<Restaurant>;
   removeRestaurant: (id: string) => Promise<void>;
   updateRestaurant: (id: string, updates: Partial<Restaurant>) => void;
-  getRestaurantByEmail: (email: string) => Restaurant | null;
   getRestaurantById: (id: string) => Restaurant | null;
 };
 
@@ -65,14 +62,14 @@ export const useRestaurantStore = create<RestaurantState>()(
         return get().restaurants.filter(
           (r) =>
             r.name.toLowerCase().includes(normalized) ||
-            r.city?.toLowerCase().includes(normalized) ||
+            r.address?.toLowerCase().includes(normalized) ||
             r.description?.toLowerCase().includes(normalized)
         );
       },
       async addRestaurant(input) {
         const slug = input.slug?.trim() || slugify(input.name);
         const res = await createRestaurantAsAdmin({
-          email: input.contactEmail,
+          email: input.email,
           password: input.password,
           name: input.name,
           slug,
@@ -103,9 +100,6 @@ export const useRestaurantStore = create<RestaurantState>()(
         const restaurants = get().restaurants;
         const updated = restaurants.map((r) => (r.id === id ? { ...r, ...updates } : r));
         set({ restaurants: updated });
-      },
-      getRestaurantByEmail(email) {
-        return get().restaurants.find((r) => r.contactEmail === email) || null;
       },
       getRestaurantById(id) {
         return get().restaurants.find((r) => r.id === id) || null;

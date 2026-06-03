@@ -22,8 +22,8 @@ export default function RestaurantCatalog({ restaurants, title, titleKey = "cata
     if (!trimmed) return restaurants;
     return restaurants.filter((restaurant) => {
       const description = restaurant.description?.toLowerCase() ?? "";
-      const city = restaurant.city?.toLowerCase() ?? "";
-      return restaurant.name.toLowerCase().includes(trimmed) || city.includes(trimmed) || description.includes(trimmed);
+      const address = restaurant.address?.toLowerCase() ?? "";
+      return restaurant.name.toLowerCase().includes(trimmed) || address.includes(trimmed) || description.includes(trimmed);
     });
   }, [query, restaurants]);
 

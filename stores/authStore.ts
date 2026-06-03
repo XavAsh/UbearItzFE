@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { User, UserRole } from "@/types";
-import { login as apiLogin } from "@/services/api/auth";
+import { getMe as apiGetMe, login as apiLogin, updateMe as apiUpdateMe } from "@/services/api/auth";
 
 /**
  * AuthStore persists the currently logged in user/token pair in localStorage + cookies.
@@ -14,7 +14,8 @@ type AuthState = {
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   loadDemoUser: (email?: string) => void;
-  updateProfile: (partial: Partial<User>) => void;
+  loadMe: () => Promise<void>;
+  updateProfile: (partial: { firstName?: string | null; lastName?: string | null }) => Promise<void>;
   logout: () => void;
   isAuthenticated: () => boolean;
   hasRole: (...roles: UserRole[]) => boolean;
@@ -36,10 +37,23 @@ export const useAuthStore = create<AuthState>()(
           .login(email, "password123")
           .catch(() => {});
       },
-      updateProfile: (partial) => {
-        const curr = get().currentUser;
-        if (!curr) return;
-        set({ currentUser: { ...curr, ...partial } });
+      async loadMe() {
+        if (!get().token) return;
+        try {
+          const me = await apiGetMe();
+          set({ currentUser: me });
+        } catch {
+          // Token likely expired/invalid: force a clean logout so the UI routes to login.
+          document.cookie = "auth-token=; path=/; max-age=0";
+          set({ currentUser: null, token: null });
+        }
+      },
+      async updateProfile(partial) {
+        const payload: { firstName?: string | null; lastName?: string | null } = {};
+        if (partial.firstName !== undefined) payload.firstName = partial.firstName;
+        if (partial.lastName !== undefined) payload.lastName = partial.lastName;
+        const updated = await apiUpdateMe(payload);
+        set({ currentUser: updated });
       },
       logout: () => {
         document.cookie = "auth-token=; path=/; max-age=0";

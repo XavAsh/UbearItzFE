@@ -6,23 +6,31 @@ import { useAuthStore } from "@/stores/authStore";
 import { useI18n } from "@/lib/i18n";
 
 export default function AccountPageClient() {
-  const { currentUser, updateProfile, logout } = useAuthStore();
+  const { currentUser, loadMe, updateProfile, logout } = useAuthStore();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [didLoadMe, setDidLoadMe] = useState(false);
   const { t } = useI18n();
 
   useEffect(() => {
     if (currentUser) {
       const displayName = [currentUser.firstName, currentUser.lastName].filter(Boolean).join(" ");
       setName(displayName);
-      setEmail(currentUser.email);
     }
   }, [currentUser]);
+
+  useEffect(() => {
+    // Validate persisted auth + refresh the profile from the backend once.
+    if (!currentUser || didLoadMe) return;
+    setDidLoadMe(true);
+    loadMe().catch(() => {
+      // handled by store (it will clear token/currentUser on failure)
+    });
+  }, [currentUser, didLoadMe, loadMe]);
 
   const onSave = () => {
     const trimmed = name.trim();
     const [firstName, ...rest] = trimmed ? trimmed.split(/\s+/) : [];
-    updateProfile({ firstName: firstName || null, lastName: rest.length ? rest.join(" ") : null, email });
+    void updateProfile({ firstName: firstName || null, lastName: rest.length ? rest.join(" ") : null });
   };
 
   return (
@@ -46,7 +54,7 @@ export default function AccountPageClient() {
             </label>
             <label className="block">
               <span className="text-sm font-medium">{t("account.email")}</span>
-              <input value={email} onChange={(e) => setEmail(e.target.value)} className="border rounded px-3 py-2 w-full" />
+              <input value={currentUser.email} disabled className="border rounded px-3 py-2 w-full" />
             </label>
             <div className="flex gap-2">
               <button onClick={onSave} className="bg-black text-white px-4 py-2 rounded">

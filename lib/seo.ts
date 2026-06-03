@@ -57,8 +57,6 @@ export function buildRestaurantSchema(restaurant: Restaurant) {
       ? {
           "@type": "PostalAddress",
           streetAddress: restaurant.address,
-          postalCode: restaurant.postalCode,
-          addressLocality: restaurant.city,
           addressCountry: "FR",
         }
       : undefined,

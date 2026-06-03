@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import RequireAuth from "@/components/auth/RequireAuth";
 import { useOrderStore } from "@/stores/orderStore";
 import { useI18n } from "@/lib/i18n";
+import { cancelOrder } from "@/services/api/orders";
 
 export default function OrdersPageClient() {
   const orders = useOrderStore((state) => state.orders);
@@ -14,6 +15,21 @@ export default function OrdersPageClient() {
   const hasOrders = useOrderStore((state) => state.hasOrders());
   const latestOrder = useOrderStore((state) => state.latestOrder());
   const { t } = useI18n();
+  const [cancelingId, setCancelingId] = useState<string | null>(null);
+  const [cancelError, setCancelError] = useState<string | null>(null);
+
+  async function cancelPending(orderId: string) {
+    setCancelError(null);
+    setCancelingId(orderId);
+    try {
+      await cancelOrder(orderId);
+      await hydrateFromMock(true);
+    } catch (err) {
+      setCancelError(err instanceof Error ? err.message : t("error.description"));
+    } finally {
+      setCancelingId(null);
+    }
+  }
 
   useEffect(() => {
     if (orders.length === 0 && (status === "idle" || status === "error")) {
@@ -66,6 +82,11 @@ export default function OrdersPageClient() {
             </button>
           </div>
         </div>
+        {cancelError && (
+          <p className="text-red-600 text-sm mb-4" role="alert">
+            {cancelError}
+          </p>
+        )}
           {latestOrder && (
             <p className="text-sm text-gray-600 mb-4">
               {t("orders.latest").replace("{{date}}", new Date(latestOrder.createdAt).toLocaleDateString())}
@@ -81,6 +102,17 @@ export default function OrdersPageClient() {
                   {t("cart.total")}: €{order.total.toFixed(2)}
                 </span>
               </div>
+              {order.status === "pending" && (
+                <div className="mb-3">
+                  <button
+                    className="underline text-red-600 text-sm"
+                    disabled={cancelingId === order.id}
+                    onClick={() => void cancelPending(order.id)}
+                  >
+                    {cancelingId === order.id ? t("orders.cancelling") : t("orders.cancel")}
+                  </button>
+                </div>
+              )}
               <ul className="ml-4 list-disc">
                 {order.items.map((item) => (
                   <li key={`${order.id}-${item.dishId}`}>

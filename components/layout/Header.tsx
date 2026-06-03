@@ -1,15 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import LanguageSwitcher from "@/components/layout/LanguageSwitcher";
 import { useAuthStore } from "@/stores/authStore";
 
 export default function Header() {
   const { t } = useI18n();
+  const [hydrated, setHydrated] = useState(false);
   const currentUser = useAuthStore((state) => state.currentUser);
   const logout = useAuthStore((state) => state.logout);
   const hasRole = useAuthStore((state) => state.hasRole);
+
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
   const handleLogout = () => {
     logout();
     if (typeof window !== "undefined") {
@@ -23,7 +30,11 @@ export default function Header() {
           UbearItz
         </Link>
         <nav className="flex items-center gap-4 text-sm" aria-label="Primary navigation">
-          {!currentUser && (
+          {!hydrated ? (
+            <span className="invisible select-none" aria-hidden="true">
+              {t("nav.login")}
+            </span>
+          ) : !currentUser ? (
             <>
               <Link href="/login" className="underline">
                 {t("nav.login")}
@@ -32,50 +43,52 @@ export default function Header() {
                 {t("nav.register")}
               </Link>
             </>
-          )}
-
-          {hasRole("ADMIN") && (
+          ) : (
             <>
-              <Link href="/admin" className="underline">
-                {t("nav.admin")}
-              </Link>
-              <button onClick={handleLogout} className="underline">
-                {t("nav.logout") || "Logout"}
-              </button>
-            </>
-          )}
+              {hasRole("ADMIN") && (
+                <>
+                  <Link href="/admin" className="underline">
+                    {t("nav.admin")}
+                  </Link>
+                  <button type="button" onClick={handleLogout} className="underline">
+                    {t("nav.logout") || "Logout"}
+                  </button>
+                </>
+              )}
 
-          {hasRole("RESTAURANT") && (
-            <>
-              <Link href="/restaurant" className="underline">
-                {t("nav.restaurant")}
-              </Link>
-              <Link href="/restaurant/dishes" className="underline">
-                {t("nav.dishes") || "Dishes"}
-              </Link>
-              <Link href="/restaurant/orders" className="underline">
-                {t("nav.orders") || "Orders"}
-              </Link>
-              <button onClick={handleLogout} className="underline">
-                {t("nav.logout") || "Logout"}
-              </button>
-            </>
-          )}
+              {hasRole("RESTAURANT") && (
+                <>
+                  <Link href="/restaurant" className="underline">
+                    {t("nav.restaurant")}
+                  </Link>
+                  <Link href="/restaurant/dishes" className="underline">
+                    {t("nav.dishes") || "Dishes"}
+                  </Link>
+                  <Link href="/restaurant/orders" className="underline">
+                    {t("nav.orders") || "Orders"}
+                  </Link>
+                  <button type="button" onClick={handleLogout} className="underline">
+                    {t("nav.logout") || "Logout"}
+                  </button>
+                </>
+              )}
 
-          {hasRole("USER") && (
-            <>
-              <Link href="/orders" className="underline">
-                {t("nav.history")}
-              </Link>
-              <Link href="/cart" className="underline">
-                {t("nav.cart")}
-              </Link>
-              <Link href="/account" className="underline">
-                {t("nav.account")}
-              </Link>
-              <button onClick={handleLogout} className="underline">
-                {t("nav.logout") || "Logout"}
-              </button>
+              {hasRole("USER") && (
+                <>
+                  <Link href="/orders" className="underline">
+                    {t("nav.history")}
+                  </Link>
+                  <Link href="/cart" className="underline">
+                    {t("nav.cart")}
+                  </Link>
+                  <Link href="/account" className="underline">
+                    {t("nav.account")}
+                  </Link>
+                  <button type="button" onClick={handleLogout} className="underline">
+                    {t("nav.logout") || "Logout"}
+                  </button>
+                </>
+              )}
             </>
           )}
 

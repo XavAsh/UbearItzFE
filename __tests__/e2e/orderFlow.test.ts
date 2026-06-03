@@ -39,6 +39,6 @@ test.describe("Happy path: login → browse → add to cart → checkout", () =>
     await expect(page).toHaveURL("/orders");
     await expect(page.getByRole("heading", { name: "My Orders" })).toBeVisible();
     // At least one order visible
-    await expect(page.locator("li >> text=Total:")).toHaveCount(1);
+    await expect(page.locator("li >> text=Total price:")).toHaveCount(1);
   });
 });

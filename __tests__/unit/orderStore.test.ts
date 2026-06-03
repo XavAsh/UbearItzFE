@@ -18,9 +18,9 @@ const { mockOrders } = vi.hoisted(() => ({
 
 vi.mock("@/services/api/orders", () => ({
   getOrders: vi.fn().mockResolvedValue(mockOrders),
-  createOrder: vi.fn().mockImplementation(async ({ userId, restaurantId, items }) => ({
+  createOrder: vi.fn().mockImplementation(async ({ restaurantId, items }) => ({
     id: "o-new",
-    userId,
+    userId: "u-test",
     restaurantId,
     items,
     total: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
@@ -44,7 +44,6 @@ describe("orderStore", () => {
     await useOrderStore.getState().hydrateFromMock(true);
     const { placeOrder, orders } = useOrderStore.getState();
     const newOrder = await placeOrder({
-      userId: "u-123",
       restaurantId: "r-1",
       items: [{ dishId: "d-1", name: "Test", price: 12, quantity: 2 }],
     });

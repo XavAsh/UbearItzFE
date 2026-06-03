@@ -11,16 +11,17 @@ test.describe("Account editing", () => {
     await expect(page).toHaveURL(/\/account/);
   });
 
-  test("user can update profile name and email", async ({ page }) => {
+  test("user can update profile name (email is read-only)", async ({ page }) => {
     await expect(page.getByRole("heading", { name: "My Account" })).toBeVisible();
 
     await page.getByLabel("Name").fill("Alice QA");
-    await page.getByLabel("Email").fill("alice.qa@example.com");
+    await expect(page.getByLabel("Email")).toBeDisabled();
+    await expect(page.getByLabel("Email")).toHaveValue("alice@example.com");
 
     await page.getByRole("button", { name: "Save" }).click();
 
     // Basic UI confirmation: inputs retain updated values
     await expect(page.getByLabel("Name")).toHaveValue("Alice QA");
-    await expect(page.getByLabel("Email")).toHaveValue("alice.qa@example.com");
+    await expect(page.getByLabel("Email")).toHaveValue("alice@example.com");
   });
 });

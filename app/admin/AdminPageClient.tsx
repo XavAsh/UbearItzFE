@@ -10,18 +10,17 @@ const initialForm = {
   name: "",
   slug: "",
   address: "",
-  postalCode: "",
-  city: "",
-  contactEmail: "",
+  email: "",
   password: "",
   imageUrl: "",
 };
 
 export default function AdminPageClient() {
   const { currentUser } = useAuthStore();
-  const { restaurants, loadAll, addRestaurant, removeRestaurant } = useRestaurantStore();
+  const { restaurants, loadAll, addRestaurant, removeRestaurant, status: restaurantStatus, error: restaurantError } = useRestaurantStore();
   const [form, setForm] = useState(initialForm);
   const [saving, setSaving] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
   const { t } = useI18n();
 
   useEffect(() => {
@@ -32,11 +31,23 @@ export default function AdminPageClient() {
     e.preventDefault();
     if (saving) return;
     setSaving(true);
+    setActionError(null);
     try {
       await addRestaurant(form);
       setForm(initialForm);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t("error.description"));
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function onRemoveRestaurant(restaurantId: string) {
+    setActionError(null);
+    try {
+      await removeRestaurant(restaurantId);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t("error.description"));
     }
   }
 
@@ -48,15 +59,24 @@ export default function AdminPageClient() {
           <p className="text-sm text-gray-600">{t("admin.loggedIn").replace("{{email}}", currentUser?.email ?? "")}</p>
         </header>
 
+        {restaurantStatus === "error" && (
+          <p className="text-red-600 text-sm" role="alert">
+            {restaurantError ?? t("error.description")}
+          </p>
+        )}
+        {actionError && (
+          <p className="text-red-600 text-sm" role="alert">
+            {actionError}
+          </p>
+        )}
+
         <section>
           <h2 className="text-xl font-medium mb-3">{t("admin.add")}</h2>
           <form onSubmit={onSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input className="border rounded px-3 py-2" placeholder={t("account.name")} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
             <input className="border rounded px-3 py-2" placeholder={t("admin.form.slug")} value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} />
             <input className="border rounded px-3 py-2" placeholder="Address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} required />
-            <input className="border rounded px-3 py-2" placeholder="Postal Code" value={form.postalCode} onChange={(e) => setForm({ ...form, postalCode: e.target.value })} required />
-            <input className="border rounded px-3 py-2" placeholder="City" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} required />
-            <input className="border rounded px-3 py-2" type="email" placeholder="Restaurant Email" value={form.contactEmail} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} required />
+            <input className="border rounded px-3 py-2" type="email" placeholder="Restaurant Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
             <input className="border rounded px-3 py-2" type="password" placeholder="Password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
             <input className="border rounded px-3 py-2" placeholder={t("admin.form.imageUrl")} value={form.imageUrl} onChange={(e) => setForm({ ...form, imageUrl: e.target.value })} />
             <div className="md:col-span-2">
@@ -74,10 +94,9 @@ export default function AdminPageClient() {
               <div key={restaurant.id} className="border rounded p-4 flex items-start justify-between gap-3">
                 <div className="font-semibold">{restaurant.name}</div>
                 <div className="flex-1">
-                  <div className="text-sm text-gray-600">{restaurant.city ? `${restaurant.address}, ${restaurant.postalCode} ${restaurant.city}` : restaurant.description}</div>
-                  {restaurant.contactEmail && <div className="text-sm">{restaurant.contactEmail}</div>}
+                  <div className="text-sm text-gray-600">{restaurant.address ?? restaurant.description}</div>
                 </div>
-                <button className="text-red-600 text-sm underline" onClick={() => removeRestaurant(restaurant.id)} aria-label={`${t("cart.remove")} ${restaurant.name}`}>
+                <button className="text-red-600 text-sm underline" onClick={() => void onRemoveRestaurant(restaurant.id)} aria-label={`${t("cart.remove")} ${restaurant.name}`}>
                   {t("cart.remove")}
                 </button>
               </div>

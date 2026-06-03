@@ -1,6 +1,5 @@
 import type { Order, OrderItem } from "@/types";
 import { apiFetch } from "@/services/http";
-import { getDishById } from "@/services/api/dishes";
 
 type ApiOrderItem = {
   id: string;
@@ -8,6 +7,7 @@ type ApiOrderItem = {
   dishId: string;
   quantity: number;
   unitPriceCents: number;
+  dish?: { name: string };
   createdAt: string;
   updatedAt: string;
 };
@@ -42,22 +42,12 @@ function mapStatus(s: ApiOrder["status"]): Order["status"] {
 }
 
 async function mapOrder(api: ApiOrder): Promise<Order> {
-  const dishCache = new Map<string, { name: string }>();
-
-  const items: OrderItem[] = await Promise.all(
-    api.items.map(async (it) => {
-      if (!dishCache.has(it.dishId)) {
-        const dish = await getDishById(it.dishId);
-        dishCache.set(it.dishId, { name: dish.name });
-      }
-      return {
-        dishId: it.dishId,
-        name: dishCache.get(it.dishId)!.name,
-        price: it.unitPriceCents / 100,
-        quantity: it.quantity,
-      };
-    }),
-  );
+  const items: OrderItem[] = api.items.map((it) => ({
+    dishId: it.dishId,
+    name: it.dish?.name ?? it.dishId,
+    price: it.unitPriceCents / 100,
+    quantity: it.quantity,
+  }));
 
   return {
     id: api.id,
@@ -82,7 +72,6 @@ export async function getOrdersByUser(_userId: string): Promise<Order[]> {
 }
 
 type CreateOrderInput = {
-  userId: string;
   restaurantId: string;
   items: OrderItem[];
 };
@@ -106,6 +95,13 @@ export async function updateRestaurantOrderStatus(orderId: string, status: ApiOr
     method: "PATCH",
     auth: true,
     body: JSON.stringify({ status }),
+  });
+}
+
+export async function cancelOrder(orderId: string): Promise<void> {
+  await apiFetch<unknown>("/orders/" + encodeURIComponent(orderId), {
+    method: "DELETE",
+    auth: true,
   });
 }
 

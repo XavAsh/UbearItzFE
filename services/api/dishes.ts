@@ -21,6 +21,7 @@ function mapDish(d: ApiDish): Dish {
     description: d.description ?? "",
     image: d.imageUrl ?? "",
     price: d.priceCents / 100,
+    isActive: d.isActive,
   };
 }
 

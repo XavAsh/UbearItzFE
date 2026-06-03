@@ -5,4 +5,5 @@ export interface Dish {
   image: string;
   description: string;
   restaurantId: string;
+  isActive?: boolean;
 }

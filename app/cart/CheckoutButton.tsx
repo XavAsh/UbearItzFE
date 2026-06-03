@@ -4,17 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/stores/cartStore";
 import { useOrderStore } from "@/stores/orderStore";
-import { useAuthStore } from "@/stores/authStore";
 import { useI18n } from "@/lib/i18n";
 
 export default function CheckoutButton() {
   const router = useRouter();
   const items = useCartStore((state) => state.items);
-  const totalPrice = useCartStore((state) => state.totalPrice);
   const clear = useCartStore((state) => state.clear);
   const isCartEmpty = useCartStore((state) => state.isEmpty());
   const placeOrder = useOrderStore((state) => state.placeOrder);
-  const currentUser = useAuthStore((state) => state.currentUser);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { t } = useI18n();
@@ -25,7 +22,6 @@ export default function CheckoutButton() {
     setError(null);
     try {
       await placeOrder({
-        userId: currentUser?.id ?? "u-guest",
         restaurantId: items[0].restaurantId,
         items: items.map(({ dishId, name, price, quantity }) => ({ dishId, name, price, quantity })),
       });
