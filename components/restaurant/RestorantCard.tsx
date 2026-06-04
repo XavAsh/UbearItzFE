@@ -1,5 +1,6 @@
-import Image from "next/image";
+import AppImage from "@/components/ui/AppImage";
 import Card from "@/components/ui/Card";
+import { PLACEHOLDER_RESTAURANT } from "@/lib/images";
 import type { Restaurant } from "@/types";
 
 type RestaurantCardProps = {
@@ -10,8 +11,9 @@ export default function RestaurantCard({ restaurant }: RestaurantCardProps) {
   return (
     <Card href={`/restaurants/${restaurant.id}`}>
       <div className="aspect-video w-full overflow-hidden bg-gray-100">
-        <Image
-          src={restaurant.image || "/placeholder-restaurant.jpg"}
+        <AppImage
+          src={restaurant.image}
+          fallback={PLACEHOLDER_RESTAURANT}
           alt={restaurant.name}
           width={640}
           height={360}

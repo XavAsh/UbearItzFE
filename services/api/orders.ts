@@ -1,5 +1,10 @@
 import type { Order, OrderItem } from "@/types";
-import { apiFetch } from "@/services/http";
+import { mapApiStatusToUi, type ApiOrderStatus } from "@/lib/orderStatus";
+import { apiFetch, type PaginatedResponse, unwrapPaginated } from "@/services/http";
+
+export type { ApiOrderStatus };
+
+const LIST_LIMIT = 100;
 
 type ApiOrderItem = {
   id: string;
@@ -16,30 +21,12 @@ type ApiOrder = {
   id: string;
   userId: string;
   restaurantId: string;
-  status: "PENDING" | "CONFIRMED" | "PAID" | "PREPARING" | "READY" | "DELIVERED" | "CANCELLED";
+  status: ApiOrderStatus;
   totalCents: number;
   items: ApiOrderItem[];
   createdAt: string;
   updatedAt: string;
 };
-
-function mapStatus(s: ApiOrder["status"]): Order["status"] {
-  switch (s) {
-    case "PENDING":
-      return "pending";
-    case "PREPARING":
-      return "preparing";
-    case "READY":
-      return "ready";
-    case "DELIVERED":
-      return "completed";
-    case "CANCELLED":
-      return "cancelled";
-    case "CONFIRMED":
-    case "PAID":
-      return "pending";
-  }
-}
 
 async function mapOrder(api: ApiOrder): Promise<Order> {
   const items: OrderItem[] = api.items.map((it) => ({
@@ -55,15 +42,18 @@ async function mapOrder(api: ApiOrder): Promise<Order> {
     restaurantId: api.restaurantId,
     items,
     total: api.totalCents / 100,
-    status: mapStatus(api.status),
+    apiStatus: api.status,
+    status: mapApiStatusToUi(api.status),
     createdAt: api.createdAt,
     updatedAt: api.updatedAt,
   };
 }
 
 export async function getOrders(): Promise<Order[]> {
-  const api = await apiFetch<ApiOrder[]>("/users/me/orders", { auth: true });
-  return Promise.all(api.map(mapOrder));
+  const api = await apiFetch<PaginatedResponse<ApiOrder>>(`/users/me/orders?limit=${LIST_LIMIT}`, {
+    auth: true,
+  });
+  return Promise.all(unwrapPaginated(api).map(mapOrder));
 }
 
 export async function getOrdersByUser(_userId: string): Promise<Order[]> {
@@ -86,12 +76,15 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
 }
 
 export async function getRestaurantOrders(): Promise<Order[]> {
-  const api = await apiFetch<ApiOrder[]>("/restaurants/me/orders", { auth: true });
-  return Promise.all(api.map(mapOrder));
+  const api = await apiFetch<PaginatedResponse<ApiOrder>>(
+    `/restaurants/me/orders?limit=${LIST_LIMIT}`,
+    { auth: true },
+  );
+  return Promise.all(unwrapPaginated(api).map(mapOrder));
 }
 
 export async function updateRestaurantOrderStatus(orderId: string, status: ApiOrder["status"]) {
-  return apiFetch<ApiOrder>("/restaurants/me/orders/" + encodeURIComponent(orderId) + "/status", {
+  await apiFetch<void>("/restaurants/me/orders/" + encodeURIComponent(orderId) + "/status", {
     method: "PATCH",
     auth: true,
     body: JSON.stringify({ status }),

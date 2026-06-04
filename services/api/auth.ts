@@ -7,10 +7,26 @@ type LoginResponse = {
   user: User;
 };
 
-export async function login(email: string, password: string): Promise<{ user: User; token: string }> {
+export type LoginChallenge = {
+  failures: number;
+  captchaRequired: boolean;
+  locked: boolean;
+  retryAfterSeconds: number | null;
+};
+
+export async function getLoginChallenge(email: string): Promise<LoginChallenge> {
+  const params = new URLSearchParams({ email });
+  return apiFetch<LoginChallenge>(`/auth/login/challenge?${params.toString()}`);
+}
+
+export async function login(
+  email: string,
+  password: string,
+  humanCheck = false,
+): Promise<{ user: User; token: string }> {
   const res = await apiFetch<LoginResponse>("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ email, password, humanCheck }),
   });
   return { user: res.user, token: res.accessToken };
 }

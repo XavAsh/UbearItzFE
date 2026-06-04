@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-label="Dish placeholder">
+  <rect width="640" height="360" fill="#f3f4f6"/>
+  <ellipse cx="320" cy="200" rx="120" ry="70" fill="#d1d5db"/>
+  <ellipse cx="320" cy="190" rx="100" ry="55" fill="#e5e7eb"/>
+  <text x="320" y="300" text-anchor="middle" font-family="system-ui,sans-serif" font-size="18" fill="#6b7280">No image</text>
+</svg>

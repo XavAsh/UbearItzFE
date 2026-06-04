@@ -14,6 +14,18 @@ export type ApiProblemDetails = {
   status: number;
 };
 
+export type PaginatedResponse<T> = {
+  data: T[];
+  pagination: { total: number; limit: number; offset: number };
+};
+
+/** Backend list endpoints return `{ data, pagination }`; unwrap for UI code expecting arrays. */
+export function unwrapPaginated<T>(body: T[] | PaginatedResponse<T>): T[] {
+  if (Array.isArray(body)) return body;
+  if (body && typeof body === "object" && Array.isArray(body.data)) return body.data;
+  return [];
+}
+
 export class ApiError extends Error {
   public readonly status: number;
   public readonly body?: unknown;

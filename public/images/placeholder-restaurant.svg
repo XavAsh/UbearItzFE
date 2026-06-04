@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 640 360" role="img" aria-label="Restaurant placeholder">
+  <rect width="640" height="360" fill="#e5e7eb"/>
+  <path d="M320 120c-33 0-60 27-60 60v20h120v-20c0-33-27-60-60-60z" fill="#9ca3af"/>
+  <rect x="200" y="200" width="240" height="100" rx="8" fill="#d1d5db"/>
+  <text x="320" y="265" text-anchor="middle" font-family="system-ui,sans-serif" font-size="18" fill="#6b7280">Restaurant</text>
+</svg>

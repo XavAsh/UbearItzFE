@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { nonEmptyImageUrls } from "@/lib/images";
 import type { Dish, Restaurant } from "@/types";
 
 const SITE_NAME = "UbearItz";
@@ -21,7 +22,8 @@ type SeoParams = {
 
 export function buildMetadata({ title, description, path = "/", images }: SeoParams): Metadata {
   const url = toAbsoluteUrl(path);
-  const imageEntries = images?.map((image) => ({ url: toAbsoluteUrl(image) }));
+  const safeImages = nonEmptyImageUrls(images);
+  const imageEntries = safeImages.map((image) => ({ url: toAbsoluteUrl(image) }));
   return {
     title,
     description,
@@ -30,14 +32,14 @@ export function buildMetadata({ title, description, path = "/", images }: SeoPar
       description,
       url,
       siteName: SITE_NAME,
-      images: imageEntries,
+      ...(imageEntries.length > 0 ? { images: imageEntries } : {}),
       type: "website",
     },
     twitter: {
-      card: images && images.length > 0 ? "summary_large_image" : "summary",
+      card: safeImages.length > 0 ? "summary_large_image" : "summary",
       title,
       description,
-      images,
+      ...(safeImages.length > 0 ? { images: safeImages } : {}),
     },
     alternates: {
       canonical: url,
@@ -51,7 +53,7 @@ export function buildRestaurantSchema(restaurant: Restaurant) {
     "@type": "Restaurant",
     name: restaurant.name,
     description: restaurant.description,
-    image: toAbsoluteUrl(restaurant.image),
+    ...(restaurant.image.trim() ? { image: toAbsoluteUrl(restaurant.image) } : {}),
     url: toAbsoluteUrl(`/restaurants/${restaurant.id}`),
     address: restaurant.address
       ? {
@@ -69,7 +71,7 @@ export function buildDishSchema(dish: Dish) {
     "@type": "MenuItem",
     name: dish.name,
     description: dish.description,
-    image: toAbsoluteUrl(dish.image),
+    ...(dish.image.trim() ? { image: toAbsoluteUrl(dish.image) } : {}),
     offers: {
       "@type": "Offer",
       priceCurrency: "EUR",

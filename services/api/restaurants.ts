@@ -1,5 +1,8 @@
 import type { Dish, Restaurant } from "@/types";
-import { apiFetch } from "@/services/http";
+import { PLACEHOLDER_DISH, PLACEHOLDER_RESTAURANT, resolveImageSrc } from "@/lib/images";
+import { apiFetch, type PaginatedResponse, unwrapPaginated } from "@/services/http";
+
+const LIST_LIMIT = 100;
 
 type ApiRestaurant = {
   id: string;
@@ -30,7 +33,7 @@ function mapDish(d: ApiDish): Dish {
     restaurantId: d.restaurantId,
     name: d.name,
     description: d.description ?? "",
-    image: d.imageUrl ?? "",
+    image: resolveImageSrc(d.imageUrl, PLACEHOLDER_DISH),
     price: d.priceCents / 100,
     isActive: d.isActive,
   };
@@ -41,17 +44,23 @@ function mapRestaurant(r: ApiRestaurant, dishes: Dish[]): Restaurant {
     id: r.id,
     name: r.name,
     description: "",
-    image: r.imageUrl ?? "",
+    image: resolveImageSrc(r.imageUrl, PLACEHOLDER_RESTAURANT),
     dishes,
     address: r.address ?? undefined,
   };
 }
 
 export async function getRestaurants(): Promise<Restaurant[]> {
-  const restaurants = await apiFetch<ApiRestaurant[]>("/restaurants");
+  const restaurantsRes = await apiFetch<PaginatedResponse<ApiRestaurant>>(
+    `/restaurants?limit=${LIST_LIMIT}`,
+  );
+  const restaurants = unwrapPaginated(restaurantsRes);
   const dishesByRestaurant = await Promise.all(
     restaurants.map(async (r) => {
-      const dishes = await apiFetch<ApiDish[]>(`/restaurants/${r.id}/dishes`);
+      const dishesRes = await apiFetch<PaginatedResponse<ApiDish>>(
+        `/restaurants/${r.id}/dishes?limit=${LIST_LIMIT}`,
+      );
+      const dishes = unwrapPaginated(dishesRes);
       return [r.id, dishes.filter((d) => d.isActive).map(mapDish)] as const;
     }),
   );

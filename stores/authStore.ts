@@ -12,7 +12,7 @@ import { getMe as apiGetMe, login as apiLogin, updateMe as apiUpdateMe } from "@
 type AuthState = {
   currentUser: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, humanCheck?: boolean) => Promise<void>;
   loadDemoUser: (email?: string) => void;
   loadMe: () => Promise<void>;
   updateProfile: (partial: { firstName?: string | null; lastName?: string | null }) => Promise<void>;
@@ -26,8 +26,8 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       currentUser: null,
       token: null,
-      async login(email, password) {
-        const { user, token } = await apiLogin(email, password);
+      async login(email, password, humanCheck = false) {
+        const { user, token } = await apiLogin(email, password, humanCheck);
         document.cookie = `auth-token=${token}; path=/; max-age=604800`; // 7 days
         set({ currentUser: user, token });
       },

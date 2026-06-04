@@ -11,6 +11,7 @@ const { mockOrders } = vi.hoisted(() => ({
       items: [{ dishId: "d-1", name: "Test Dish", price: 10, quantity: 1 }],
       total: 10,
       status: "pending",
+      apiStatus: "PENDING",
       createdAt: new Date().toISOString(),
     },
   ] satisfies Order[],
@@ -25,6 +26,7 @@ vi.mock("@/services/api/orders", () => ({
     items,
     total: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     status: "pending",
+    apiStatus: "PENDING",
     createdAt: new Date().toISOString(),
   })),
 }));

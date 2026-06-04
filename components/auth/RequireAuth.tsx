@@ -21,10 +21,15 @@ const authPersist = (useAuthStore as typeof useAuthStore & { persist?: PersistHe
 
 export default function RequireAuth({ children, allowedRoles, fallbackMessage }: RequireAuthProps) {
   const currentUser = useAuthStore((state) => state.currentUser);
-  const [hydrated, setHydrated] = useState(() => authPersist?.hasHydrated?.() ?? false);
+  // Always false on first render (server + client) so SSR markup matches before persist rehydrates.
+  const [hydrated, setHydrated] = useState(false);
   const { t } = useI18n();
 
   useEffect(() => {
+    if (authPersist?.hasHydrated?.()) {
+      setHydrated(true);
+      return;
+    }
     if (!authPersist?.onFinishHydration) {
       setHydrated(true);
       return;

@@ -1,5 +1,8 @@
 import type { Dish } from "@/types";
-import { apiFetch } from "@/services/http";
+import { PLACEHOLDER_DISH, resolveImageSrc } from "@/lib/images";
+import { apiFetch, type PaginatedResponse, unwrapPaginated } from "@/services/http";
+
+const LIST_LIMIT = 100;
 
 type ApiDish = {
   id: string;
@@ -19,7 +22,7 @@ function mapDish(d: ApiDish): Dish {
     restaurantId: d.restaurantId,
     name: d.name,
     description: d.description ?? "",
-    image: d.imageUrl ?? "",
+    image: resolveImageSrc(d.imageUrl, PLACEHOLDER_DISH),
     price: d.priceCents / 100,
     isActive: d.isActive,
   };
@@ -31,8 +34,10 @@ export async function getDishById(id: string): Promise<Dish> {
 }
 
 export async function getDishesByRestaurant(restaurantId: string): Promise<Dish[]> {
-  const dishes = await apiFetch<ApiDish[]>(`/restaurants/${restaurantId}/dishes`);
-  return dishes.filter((d) => d.isActive).map(mapDish);
+  const dishesRes = await apiFetch<PaginatedResponse<ApiDish>>(
+    `/restaurants/${restaurantId}/dishes?limit=${LIST_LIMIT}`,
+  );
+  return unwrapPaginated(dishesRes).filter((d) => d.isActive).map(mapDish);
 }
 
 export async function createDish(input: { name: string; description: string; price: number; imageUrl?: string | null }) {

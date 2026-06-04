@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<RestaurantP
       title: `${restaurant.name} | UbearItz`,
       description: restaurant.description,
       path: `/restaurants/${restaurant.id}`,
-      images: [restaurant.image],
+      images: restaurant.image.trim() ? [restaurant.image] : undefined,
     });
   } catch {
     return buildMetadata({

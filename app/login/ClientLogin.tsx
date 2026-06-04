@@ -11,8 +11,8 @@ export default function ClientLogin() {
   const pathname = usePathname();
   const firstSegment = pathname?.split("/")[1] || "";
   const currentLocale = /^[a-zA-Z]{2}$/.test(firstSegment) ? firstSegment : "en";
-  const onSubmit = async ({ email, password }: { email: string; password: string }) => {
-    await login(email, password);
+  const onSubmit = async ({ email, password, humanCheck }: { email: string; password: string; humanCheck: boolean }) => {
+    await login(email, password, humanCheck);
     const role = useAuthStore.getState().currentUser?.role;
     if (role === "ADMIN") {
       window.location.href = "/admin";

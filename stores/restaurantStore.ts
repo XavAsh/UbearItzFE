@@ -3,8 +3,20 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Restaurant } from "@/types";
+import { PLACEHOLDER_DISH, PLACEHOLDER_RESTAURANT, resolveImageSrc } from "@/lib/images";
 import { createRestaurantAsAdmin, deleteRestaurantAsAdmin, getRestaurants } from "@/services/api/restaurants";
 import { slugify } from "@/lib/utils";
+
+function normalizeRestaurant(restaurant: Restaurant): Restaurant {
+  return {
+    ...restaurant,
+    image: resolveImageSrc(restaurant.image, PLACEHOLDER_RESTAURANT),
+    dishes: (restaurant.dishes ?? []).map((dish) => ({
+      ...dish,
+      image: resolveImageSrc(dish.image, PLACEHOLDER_DISH),
+    })),
+  };
+}
 
 type NewRestaurantInput = {
   name: string;
@@ -42,14 +54,14 @@ export const useRestaurantStore = create<RestaurantState>()(
       error: undefined,
       async loadAll(options = {}) {
         if (!options.force && get().loaded && get().restaurants.length > 0) {
-          set({ status: "ready" });
+          set({ restaurants: get().restaurants.map(normalizeRestaurant), status: "ready" });
           return;
         }
         if (get().status === "loading") return;
         set({ status: "loading", error: undefined });
         try {
           const list = await getRestaurants();
-          set({ restaurants: list, loaded: true, status: "ready" });
+          set({ restaurants: list.map(normalizeRestaurant), loaded: true, status: "ready" });
         } catch (err) {
           const message = err instanceof Error ? err.message : "Unable to load restaurants";
           set({ status: "error", error: message });
@@ -79,14 +91,14 @@ export const useRestaurantStore = create<RestaurantState>()(
 
         // Refresh list from API so the store stays consistent.
         const list = await getRestaurants();
-        set({ restaurants: list, loaded: true, status: "ready" });
+        set({ restaurants: list.map(normalizeRestaurant), loaded: true, status: "ready" });
 
         // Return the created restaurant as a UI-friendly Restaurant.
         return {
           id: res.restaurant.id,
           name: res.restaurant.name,
           description: "",
-          image: res.restaurant.imageUrl ?? "",
+          image: resolveImageSrc(res.restaurant.imageUrl, PLACEHOLDER_RESTAURANT),
           dishes: [],
           address: res.restaurant.address ?? undefined,
         };
@@ -94,17 +106,23 @@ export const useRestaurantStore = create<RestaurantState>()(
       async removeRestaurant(id) {
         await deleteRestaurantAsAdmin(id);
         const list = await getRestaurants();
-        set({ restaurants: list, loaded: true, status: "ready" });
+        set({ restaurants: list.map(normalizeRestaurant), loaded: true, status: "ready" });
       },
       updateRestaurant(id, updates) {
         const restaurants = get().restaurants;
-        const updated = restaurants.map((r) => (r.id === id ? { ...r, ...updates } : r));
+        const updated = restaurants.map((r) => (r.id === id ? normalizeRestaurant({ ...r, ...updates }) : r));
         set({ restaurants: updated });
       },
       getRestaurantById(id) {
         return get().restaurants.find((r) => r.id === id) || null;
       },
     }),
-    { name: "restaurants" }
-  )
+    {
+      name: "restaurants",
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        state.restaurants = state.restaurants.map(normalizeRestaurant);
+      },
+    },
+  ),
 );

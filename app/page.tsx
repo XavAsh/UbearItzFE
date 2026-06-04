@@ -9,7 +9,7 @@ export const metadata = buildMetadata({
   title: "UbearItz | Local restaurants delivered",
   description: "Discover and order from the best Annecy restaurants with UbearItz.",
   path: "/",
-  images: ["/images/restaurants/le-bearitz.webp"],
+  images: ["/images/placeholder-restaurant.svg"],
 });
 
 export default async function Home() {

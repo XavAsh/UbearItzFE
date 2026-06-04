@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { AddToCartButton } from "./AddToCartButton";
-import Image from "next/image";
+import AppImage from "@/components/ui/AppImage";
 import BackToRestaurants from "@/components/common/BackToRestaurants";
+import { PLACEHOLDER_DISH } from "@/lib/images";
 import { fetchDishById } from "@/lib/data/dishes";
 import { buildDishSchema, buildMetadata } from "@/lib/seo";
 
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<DishPagePar
       title: `${dish.name} | UbearItz`,
       description: dish.description,
       path: `/dishes/${dish.id}`,
-      images: [dish.image],
+      images: dish.image.trim() ? [dish.image] : undefined,
     });
   } catch {
     return buildMetadata({
@@ -44,7 +45,16 @@ export default async function DishPage({ params }: { params: Promise<DishPagePar
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
         <div className="w-full overflow-hidden rounded-lg border bg-white">
-          <Image src={dish.image} alt={dish.name} width={800} height={450} sizes="(max-width: 768px) 100vw, 800px" className="w-full h-auto object-cover" priority />
+          <AppImage
+            src={dish.image}
+            fallback={PLACEHOLDER_DISH}
+            alt={dish.name}
+            width={800}
+            height={450}
+            sizes="(max-width: 768px) 100vw, 800px"
+            className="w-full h-auto object-cover"
+            priority
+          />
         </div>
 
         <div className="space-y-4">

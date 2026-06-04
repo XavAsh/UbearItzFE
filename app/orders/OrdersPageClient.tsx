@@ -5,12 +5,14 @@ import RequireAuth from "@/components/auth/RequireAuth";
 import { useOrderStore } from "@/stores/orderStore";
 import { useI18n } from "@/lib/i18n";
 import { cancelOrder } from "@/services/api/orders";
+import { formatDateTime } from "@/lib/formatDate";
+import { orderStatusLabelKey } from "@/lib/orderStatus";
 
 export default function OrdersPageClient() {
   const orders = useOrderStore((state) => state.orders);
   const status = useOrderStore((state) => state.status);
   const error = useOrderStore((state) => state.error);
-  const hydrateFromMock = useOrderStore((state) => state.hydrateFromMock);
+  const refreshOrders = useOrderStore((state) => state.refreshOrders);
   const clear = useOrderStore((state) => state.clear);
   const hasOrders = useOrderStore((state) => state.hasOrders());
   const latestOrder = useOrderStore((state) => state.latestOrder());
@@ -23,7 +25,7 @@ export default function OrdersPageClient() {
     setCancelingId(orderId);
     try {
       await cancelOrder(orderId);
-      await hydrateFromMock(true);
+      await refreshOrders();
     } catch (err) {
       setCancelError(err instanceof Error ? err.message : t("error.description"));
     } finally {
@@ -32,10 +34,14 @@ export default function OrdersPageClient() {
   }
 
   useEffect(() => {
-    if (orders.length === 0 && (status === "idle" || status === "error")) {
-      hydrateFromMock();
-    }
-  }, [orders.length, status, hydrateFromMock]);
+    void refreshOrders();
+  }, [refreshOrders]);
+
+  useEffect(() => {
+    const onFocus = () => void refreshOrders();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [refreshOrders]);
 
   if (status === "loading" && !orders.length) {
     return (
@@ -60,7 +66,7 @@ export default function OrdersPageClient() {
           ) : (
             <p>{t("orders.empty")}</p>
           )}
-          <button onClick={() => hydrateFromMock(true)} className="underline text-blue-600 mt-2">
+          <button onClick={() => void refreshOrders()} className="underline text-blue-600 mt-2">
             {t("orders.loadSamples")}
           </button>
         </main>
@@ -74,7 +80,7 @@ export default function OrdersPageClient() {
         <div className="flex items-center justify-between mb-4">
             <h1 className="text-3xl font-semibold">{t("orders.title")}</h1>
           <div className="flex gap-3 text-sm">
-            <button onClick={() => hydrateFromMock(true)} className="underline">
+            <button onClick={() => void refreshOrders()} className="underline">
                 {t("orders.reload")}
             </button>
             <button onClick={clear} className="underline text-red-600">
@@ -89,20 +95,23 @@ export default function OrdersPageClient() {
         )}
           {latestOrder && (
             <p className="text-sm text-gray-600 mb-4">
-              {t("orders.latest").replace("{{date}}", new Date(latestOrder.createdAt).toLocaleDateString())}
+              {t("orders.latest").replace("{{date}}", formatDateTime(latestOrder.createdAt))}
             </p>
           )}
         <ul>
           {orders.map((order) => (
             <li key={order.id} className="mb-4 border rounded p-4">
               <div className="flex items-center justify-between flex-wrap gap-2 mb-2">
-                <strong>{new Date(order.createdAt).toLocaleString()}</strong>
-                <span className="uppercase text-xs tracking-wide">{order.status}</span>
+                <div>
+                  <div className="text-sm text-gray-500">Order #{order.id.slice(-6)}</div>
+                  <strong>{formatDateTime(order.createdAt)}</strong>
+                </div>
+                <span className="uppercase text-xs tracking-wide">{t(orderStatusLabelKey(order.apiStatus))}</span>
                 <span className="font-semibold">
                   {t("cart.total")}: €{order.total.toFixed(2)}
                 </span>
               </div>
-              {order.status === "pending" && (
+              {order.apiStatus === "PENDING" && (
                 <div className="mb-3">
                   <button
                     className="underline text-red-600 text-sm"
